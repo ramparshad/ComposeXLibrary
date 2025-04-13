@@ -1,42 +1,25 @@
 package com.example.jcmodule
 
-import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ProgressIndicatorDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,76 +33,95 @@ import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.delay
+import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
 
+/**
+ * An animated progress bar with customizable colors and animation
+ * @param progress Target progress value between 0 and 1
+ * @param modifier Modifier for the progress bar
+ * @param backgroundColor Color of the progress bar track
+ * @param progressColor Color of the progress indicator
+ * @param animationDuration Duration of progress animation in milliseconds
+ */
+
 @Composable
-fun JCCircularProgress() {
-    var progress by remember { mutableFloatStateOf(0f) }
+fun textUI(){
+    Text(text = "successfull", fontSize = 30.sp)
+}
 
-    Card(modifier = Modifier.fillMaxWidth().padding(15.dp)) {
-        Row(modifier = Modifier.fillMaxWidth().padding(vertical = 15.dp),
-            horizontalArrangement = Arrangement.Absolute.Center) {
 
-            val animatedProgress by animateFloatAsState(
-                targetValue = progress,
-                animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec
+/*@Composable
+fun JCAnimatedProgressBar(
+    progress: Float,
+    modifier: Modifier = Modifier,
+    backgroundColor: Color = Color.LightGray,
+    progressColor: Color = Color.Blue,
+    animationDuration: Int = 1000
+) {
+    // Validate progress value
+    val validatedProgress = progress.coerceIn(0f, 1f)
+
+    // Animated progress value
+    val animatedProgress = remember { Animatable(0f) }
+    val coroutineScope = rememberCoroutineScope()
+
+    // Animate when progress changes
+    LaunchedEffect(validatedProgress) {
+        coroutineScope.launch {
+            animatedProgress.animateTo(
+                targetValue = validatedProgress,
+                animationSpec = tween(durationMillis = animationDuration)
             )
-            val color by animateColorAsState(
-                targetValue = when {
-                    progress < 0.3f -> Color.Red
-                    progress < 0.7f -> Color.Yellow
-                    else -> Color.Green
-                }
-            )
+        }
 
-            LaunchedEffect(Unit) {
-                while (true) {
-                    progress = (progress + 0.01f).coerceAtMost(1f)
-                    if (progress >= 1f) progress = 0f
-                    delay(50)
-                }
-            }
-
-            CircularProgressIndicator(
-                progress = animatedProgress,
-                color = color,
-                strokeWidth = 8.dp,
-                modifier = Modifier.size(60.dp)
+        Column (modifier = modifier.padding(vertical = 8.dp)) {
+            LinearProgressIndicator(
+                progress = animatedProgress.value,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(8.dp),
+                color = progressColor,
+                trackColor = backgroundColor
             )
         }
     }
-}
-
+}*/
 @Composable
-fun JCBouncingLoader() {
+fun JCBouncingLoader(modifier: Modifier = Modifier) {
+    val infiniteTransition = rememberInfiniteTransition(label = "bounce")
+    val scales = List(3) { index ->
+        infiniteTransition.animateFloat(
+            initialValue = 0.3f,
+            targetValue = 1f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(1000, delayMillis = index * 150, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse
+            ),
+            label = "scale$index"
+        )
+    }
 
-    val delays = listOf(0, 150, 300)
-    val scale = remember { mutableStateListOf(0.3f, 0.3f, 0.3f) }
-    Card(modifier = Modifier.fillMaxWidth().padding(15.dp)) {
-        Row(modifier = Modifier.fillMaxWidth().padding(vertical = 15.dp),
-            horizontalArrangement = Arrangement.Absolute.Center) {
-
-            delays.forEachIndexed { index, delay ->
-                LaunchedEffect(key1 = Unit) {
-                    delay(delay.toLong())
-                    while (true) {
-                        scale[index] = 1f
-                        delay(500)
-                        scale[index] = 0.3f
-                        delay(500)
-                    }
-                }
-            }
-
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(15.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 15.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                scale.forEach { value ->
+                scales.forEach { scale ->
                     Box(
                         modifier = Modifier
                             .size(20.dp)
-                            .scale(value)
+                            .scale(scale.value)
                             .background(Color.Blue, CircleShape)
                     )
                 }
@@ -561,15 +563,15 @@ fun JCCyberpunkLoader() {
         }
     }
 }
-@Preview(showBackground = true, showSystemUi = true)
 
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun CircularProgressWithColorChangePreview() {
     Column(modifier = Modifier.fillMaxSize().padding(10.dp)
         .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.SpaceAround,
         horizontalAlignment = Alignment.CenterHorizontally) {
-        JCCircularProgress()
+
         JCLiquidProgress()
         JCNNLoader()
         JCCyberpunkLoader()
