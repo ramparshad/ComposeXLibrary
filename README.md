@@ -30,6 +30,10 @@ dependencies {
 ## ✨✨ 1. Animated ProgressBars 
 
 
+https://github.com/user-attachments/assets/b76798b3-1453-41b8-b956-b9ece1ce5a2e
+
+
+
 ```bash
   
   JCAnimatedProgress(
@@ -193,6 +197,10 @@ SpiralProgressBar(
                 )
             }
         }
+
+
+https://github.com/user-attachments/assets/9151c767-0ce0-42b3-b300-a8bf37f289fe
+
 ```
 #### 2.2 --> Customized BounceBottomBar
 ```bash
