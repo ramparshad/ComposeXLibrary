@@ -85,9 +85,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.LayoutDirection
 import kotlin.math.min
 
 
@@ -404,21 +401,6 @@ fun LiquidMotionAppBar(
                 }
                 .background(bgColor)
         ) {
-
-            fun Alignment.Companion.Custom(
-                horizontal: Alignment.Horizontal,
-                vertical: Alignment.Vertical
-            ): Alignment = object : Alignment {
-                override fun align(
-                    size: IntSize,
-                    space: IntSize,
-                    layoutDirection: LayoutDirection
-                ): IntOffset {
-                    val x = horizontal.align(size.width, space.width, layoutDirection)
-                    val y = vertical.align(size.height, space.height)
-                    return IntOffset(x, y)
-                }
-            }
             // Title Row with leading icon
             Row(
                 modifier = Modifier

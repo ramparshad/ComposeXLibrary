@@ -1,6 +1,6 @@
 package com.example.jcmodule
 
-import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -11,582 +11,485 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Card
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.drawscope.Fill
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.launch
-import kotlin.math.abs
+import androidx.compose.ui.unit.max
+import androidx.compose.ui.unit.min
 import kotlin.math.cos
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.sin
 
-/**
- * An animated progress bar with customizable colors and animation
- * @param progress Target progress value between 0 and 1
- * @param modifier Modifier for the progress bar
- * @param backgroundColor Color of the progress bar track
- * @param progressColor Color of the progress indicator
- * @param animationDuration Duration of progress animation in milliseconds
- */
-
 @Composable
-fun textUI(){
-    Text(text = "successfull", fontSize = 30.sp)
-}
-
-
-@Composable
-fun JCAnimatedProgressBar(
-    progress: Float,
+fun JCAnimatedProgress(
     modifier: Modifier = Modifier,
-    backgroundColor: Color = Color.LightGray,
-    progressColor: Color = Color.Blue,
-    animationDuration: Int = 1000
+    progressColors: List<Color> = listOf(Color.Red, Color.Yellow, Color.Green),
+    trackColor: Color = Color.Gray.copy(alpha = 0.3f),
+    backgroundColor: Color = Color.Transparent,
+    strokeWidth: Dp = 8.dp,
+    size: Dp = 60.dp,
+    animationDuration: Int = 5000,
+    progressValue: Float? = null,
+    shape: Shape = CircleShape,
+    borderColor: Color = Color.Transparent,
+    borderWidth: Dp = 0.dp
 ) {
-    // Validate progress value
-    val validatedProgress = progress.coerceIn(0f, 1f)
+    // Sanitize inputs to prevent errors
+    val safeSize = max(24.dp, size) // Minimum size to avoid rendering issues
+    val safeStrokeWidth = min(max(2.dp, strokeWidth), safeSize / 4) // Ensure stroke fits
+    val safeBorderWidth = min(borderWidth, safeSize / 8) // Limit border width
+    val safeProgress = progressValue?.let { min(max(0f, it), 1f) } // Clamp progress
+    val safeDuration = max(100, animationDuration) // Prevent too fast animation
+    val safeColors = if (progressColors.isEmpty()) listOf(Color.Gray) else progressColors
 
-    // Animated progress value
-    val animatedProgress = remember { Animatable(0f) }
-    val coroutineScope = rememberCoroutineScope()
-
-    // Animate when progress changes
-    LaunchedEffect(validatedProgress) {
-        coroutineScope.launch {
-            animatedProgress.animateTo(
-                targetValue = validatedProgress,
-                animationSpec = tween(durationMillis = animationDuration)
-            )
-        }
-
-        Column(modifier = modifier.padding(vertical = 8.dp)) {
-            LinearProgressIndicator(
-                progress = animatedProgress.value,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(8.dp),
-                color = progressColor,
-                trackColor = backgroundColor
-            )
-        }
-    }
-}
-@Composable
-fun JCBouncingLoader(modifier: Modifier = Modifier) {
-    val infiniteTransition = rememberInfiniteTransition(label = "bounce")
-    val scales = List(3) { index ->
-        infiniteTransition.animateFloat(
-            initialValue = 0.3f,
-            targetValue = 1f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(1000, delayMillis = index * 150, easing = FastOutSlowInEasing),
-                repeatMode = RepeatMode.Reverse
+    // Animation for indeterminate mode
+    val infiniteTransition = rememberInfiniteTransition(label = "progressAnimation")
+    val animatedProgress by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(
+                durationMillis = safeDuration,
+                easing = LinearEasing
             ),
-            label = "scale$index"
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "progress"
+    )
+
+    // Use provided progressValue or animated progress
+    val finalProgress = safeProgress ?: animatedProgress
+
+    // Color transition based on progress
+    val color by animateColorAsState(
+        targetValue = when {
+            finalProgress < 0.3f -> safeColors.getOrElse(0) { Color.Gray }
+            finalProgress < 0.7f -> safeColors.getOrElse(1) { safeColors[0] }
+            else -> safeColors.getOrElse(2) { safeColors.getOrElse(1) { safeColors[0] } }
+        },
+        animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing),
+        label = "color"
+    )
+
+    Box(
+        modifier = modifier
+            .size(safeSize)
+            .clip(shape)
+            .background(backgroundColor, shape)
+            .run {
+                if (safeBorderWidth > 0.dp) {
+                    this.border(safeBorderWidth, borderColor, shape)
+                } else {
+                    this
+                }
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(
+            progress = { finalProgress },
+            color = color,
+            trackColor = trackColor,
+            strokeWidth = safeStrokeWidth,
+            modifier = Modifier.size(safeSize - safeBorderWidth * 2)
         )
     }
+}
 
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(15.dp)
+@Composable
+fun BouncingDotsLoader(
+    modifier: Modifier = Modifier,
+    dotCount: Int = 3,
+    dotSize: Dp = 12.dp,
+    color: Color = MaterialTheme.colorScheme.primary,
+    animationDuration: Int = 600,
+    spaceBetween: Dp = 8.dp
+) {
+    val delays = remember { List(dotCount) { it * 100 } }
+
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(spaceBetween),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 15.dp),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                scales.forEach { scale ->
-                    Box(
-                        modifier = Modifier
-                            .size(20.dp)
-                            .scale(scale.value)
-                            .background(Color.Blue, CircleShape)
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun JCSquareLoader() {
-    val infiniteTransition = rememberInfiniteTransition()
-
-    Card(modifier = Modifier.fillMaxWidth().padding(15.dp)) {
-        Row(modifier = Modifier.fillMaxWidth().padding(vertical = 15.dp),
-            horizontalArrangement = Arrangement.Absolute.Center) {
-
-            val rotation by infiniteTransition.animateFloat(
-                initialValue = 0f,
-                targetValue = 360f,
-                animationSpec = infiniteRepeatable(
-                    animation = tween(2000, easing = LinearEasing)
-                )
-            )
-
-
-            Box(
-                modifier = Modifier
-                    .size(50.dp)
-                    .rotate(rotation)
-                    .background(
-                        brush = Brush.linearGradient(
-                            colors = listOf(Color.Blue, Color.Cyan)
-                        ),
-                        shape = RoundedCornerShape(8.dp)
-                    )
-            )
-        }
-    }
-}
-
-@Composable
-fun JCEqualizerLoader() {
-    val infiniteTransition = rememberInfiniteTransition()
-    Card(modifier = Modifier.fillMaxWidth().padding(15.dp)) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 15.dp),
-            horizontalArrangement = Arrangement.Absolute.Center
-        ) {
-            val heights = listOf(
-                infiniteTransition.animateFloat(
-                    initialValue = 10f,
-                    targetValue = 40f,
-                    animationSpec = infiniteRepeatable(
-                        animation = keyframes {
-                            durationMillis = 1200
-                            10f at 0 with LinearEasing
-                            40f at 200 with FastOutSlowInEasing
-                            10f at 400 with LinearEasing
-                            20f at 600 with FastOutSlowInEasing
-                            10f at 800 with LinearEasing
-                            30f at 1000 with FastOutSlowInEasing
-                            10f at 1200 with LinearEasing
-                        },
-                        repeatMode = RepeatMode.Restart
-                    )
-                ),
-                infiniteTransition.animateFloat(
-                    initialValue = 30f,
-                    targetValue = 10f,
-                    animationSpec = infiniteRepeatable(
-                        animation = keyframes {
-                            durationMillis = 1200
-                            30f at 0 with LinearEasing
-                            10f at 200 with FastOutSlowInEasing
-                            25f at 400 with LinearEasing
-                            10f at 600 with FastOutSlowInEasing
-                            35f at 800 with LinearEasing
-                            10f at 1000 with FastOutSlowInEasing
-                            20f at 1200 with LinearEasing
-                        },
-                        repeatMode = RepeatMode.Restart
-                    )
-                ),
-                infiniteTransition.animateFloat(
-                    initialValue = 20f,
-                    targetValue = 35f,
-                    animationSpec = infiniteRepeatable(
-                        animation = keyframes {
-                            durationMillis = 1200
-                            20f at 0 with LinearEasing
-                            35f at 200 with FastOutSlowInEasing
-                            10f at 400 with LinearEasing
-                            25f at 600 with FastOutSlowInEasing
-                            10f at 800 with LinearEasing
-                            30f at 1000 with FastOutSlowInEasing
-                            10f at 1200 with LinearEasing
-                        },
-                        repeatMode = RepeatMode.Restart
-                    )
-                )
-            )
-
-            Row(
-                modifier = Modifier.height(40.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.Bottom
-            ) {
-                heights.forEach { animatedHeight ->
-                    Box(
-                        modifier = Modifier
-                            .width(10.dp)
-                            .height(animatedHeight.value.dp)
-                            .background(Color.Blue)
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun JCOrbitLoader() {
-    val dots = 8
-    val infiniteTransition = rememberInfiniteTransition()
-    Card(modifier = Modifier.fillMaxWidth().padding(15.dp)) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 35.dp),
-            horizontalArrangement = Arrangement.Absolute.Center
-        ) {
-            val rotations = List(dots) { index ->
-                infiniteTransition.animateFloat(
-                    initialValue = 0f,
-                    targetValue = 360f,
-                    animationSpec = infiniteRepeatable(
-                        animation = tween(2000, easing = LinearEasing),
-                        repeatMode = RepeatMode.Restart
-                    )
-                )
-            }
-
-            Box(modifier = Modifier.size(70.dp)) {
-                rotations.forEachIndexed { index, rotation ->
-                    val angle = index * (360f / dots)
-                    Box(
-                        modifier = Modifier
-                            .offset {
-                                val radius = 30.dp.roundToPx().toFloat()
-                                val radian = Math.toRadians((angle + rotation.value).toDouble())
-                                val x = (radius * cos(radian)).toFloat()
-                                val y = (radius * sin(radian)).toFloat()
-                                IntOffset(x.toInt(), y.toInt())
-                            }
-                            .size(8.dp)
-                            .background(Color.Blue, CircleShape)
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun JCLiquidProgress() {
-    val infiniteTransition = rememberInfiniteTransition()
-    Card(modifier = Modifier.fillMaxWidth().padding(15.dp)) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 15.dp),
-            horizontalArrangement = Arrangement.Absolute.Center
-        ) {
-            val waveOffset by infiniteTransition.animateFloat(
-                initialValue = 0f,
-                targetValue = 2 * Math.PI.toFloat(),
-                animationSpec = infiniteRepeatable(
-                    animation = tween(2000, easing = LinearEasing)
-                )
-            )
-
-            Canvas(modifier = Modifier.fillMaxWidth().height(16.dp)) {
-                val path = Path().apply {
-                    val amplitude = size.height / 4
-                    val frequency = 0.5f
-
-                    moveTo(0f, size.height)
-                    lineTo(0f, size.height / 2)
-
-                    for (x in 0..size.width.toInt()) {
-                        val y =
-                            size.height / 2 + amplitude * sin(waveOffset + x * frequency / size.width * 2 * Math.PI.toFloat())
-                        if (x == 0) moveTo(x.toFloat(), y) else lineTo(x.toFloat(), y)
-                    }
-
-                    lineTo(size.width, size.height)
-                    close()
-                }
-
-                drawPath(
-                    path = path,
-                    color = Color(0xFF6C5CE7),
-                    style = Fill
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun JCHolographicLoader() {
-    val infiniteTransition = rememberInfiniteTransition()
-    Card(modifier = Modifier.fillMaxWidth().padding(15.dp)) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 15.dp),
-            horizontalArrangement = Arrangement.Absolute.Center
-        ) {
-            val offsetX by infiniteTransition.animateFloat(
-                initialValue = -1000f,
-                targetValue = 1000f,
-                animationSpec = infiniteRepeatable(
-                    animation = tween(3000, easing = LinearEasing)
-                )
-            )
-
-            Box(
-                modifier = Modifier
-                    .size(120.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFF1A1A2E))
-            ) {
-                Canvas(modifier = Modifier.fillMaxSize()) {
-                    val gradient = Brush.linearGradient(
-                        colors = listOf(
-                            Color.Transparent,
-                            Color(0x5566F1FF),
-                            Color.Transparent
-                        ),
-                        start = Offset(offsetX, 0f),
-                        end = Offset(offsetX + 500f, size.height)
-                    )
-                    drawRect(brush = gradient)
-                }
-
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .background(Color(0xFF16213E))
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun JCNNLoader() {
-    val nodeCount = 5
-    val infiniteTransition = rememberInfiniteTransition()
-    Card(modifier = Modifier.fillMaxWidth().padding(15.dp)) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 15.dp),
-            horizontalArrangement = Arrangement.Absolute.Center
-        ) {
-
-            val nodeStates = List(nodeCount) { index ->
-                infiniteTransition.animateFloat(
-                    initialValue = 0f,
-                    targetValue = 1f,
-                    animationSpec = infiniteRepeatable(
-                        animation = keyframes {
-                            durationMillis = 2500
-                            0f at (index * 300) % 2500 with LinearEasing
-                            1f at ((index * 300) + 500) % 2500 with FastOutSlowInEasing
-                            0f at ((index * 300) + 1000) % 2500 with LinearEasing
-                        }
-                    )
-                )
-            }
-
-            Canvas(modifier = Modifier.size(200.dp)) {
-                // Draw connections
-                for (i in 0 until nodeCount - 1) {
-                    drawLine(
-                        color = Color(0x5566F1FF),
-                        start = Offset(size.width * (i + 0.5f) / nodeCount, size.height * 0.3f),
-                        end = Offset(size.width * (i + 1.5f) / nodeCount, size.height * 0.7f),
-                        strokeWidth = 2.dp.toPx() * nodeStates[i].value,
-                        alpha = nodeStates[i].value
-                    )
-                }
-
-                // Draw nodes
-                nodeStates.forEachIndexed { index, state ->
-                    drawCircle(
-                        color = Color(0xFF00E0FF),
-                        radius = 16.dp.toPx() * state.value,
-                        center = Offset(
-                            size.width * (index + 0.5f) / nodeCount,
-                            if (index % 2 == 0) size.height * 0.3f else size.height * 0.7f
-                        ),
-                        alpha = state.value
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun JCDNALoader() {
-    val segmentCount = 12
-    val infiniteTransition = rememberInfiniteTransition()
-    Card(modifier = Modifier.fillMaxWidth().padding(15.dp)) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 15.dp),
-            horizontalArrangement = Arrangement.Absolute.Center
-        ) {
-            val rotation by infiniteTransition.animateFloat(
-                initialValue = 0f,
-                targetValue = 360f,
-                animationSpec = infiniteRepeatable(
-                    animation = tween(4000, easing = LinearEasing)
-                )
-            )
-
-            Canvas(modifier = Modifier.size(120.dp)) {
-                val center = Offset(size.width / 2, size.height / 2)
-                val radius = size.minDimension / 3
-
-                for (i in 0 until segmentCount) {
-                    val angle = i * (360f / segmentCount) + rotation
-                    val radian = Math.toRadians(angle.toDouble())
-                    val x = center.x + radius * cos(radian).toFloat()
-                    val y = center.y + radius * sin(radian).toFloat()
-
-                    // Draw connection lines
-                    if (i > 0) {
-                        val prevAngle = (i - 1) * (360f / segmentCount) + rotation
-                        val prevRadian = Math.toRadians(prevAngle.toDouble())
-                        val prevX = center.x + radius * cos(prevRadian).toFloat()
-                        val prevY = center.y + radius * sin(prevRadian).toFloat()
-
-                        drawLine(
-                            color = Color(0xFF6C5CE7),
-                            start = Offset(prevX, prevY),
-                            end = Offset(x, y),
-                            strokeWidth = 2.dp.toPx()
-                        )
-
-                        // Draw cross connections
-                        if (i % 2 == 0) {
-                            val oppositeAngle = angle + 180f
-                            val oppositeRadian = Math.toRadians(oppositeAngle.toDouble())
-                            val oppositeX = center.x + radius * cos(oppositeRadian).toFloat()
-                            val oppositeY = center.y + radius * sin(oppositeRadian).toFloat()
-
-                            drawLine(
-                                color = Color(0xFF00E0FF).copy(alpha = 0.6f),
-                                start = Offset(x, y),
-                                end = Offset(oppositeX, oppositeY),
-                                strokeWidth = 1.dp.toPx()
-                            )
-                        }
-                    }
-
-                    // Draw nodes
-                    drawCircle(
-                        color = if (i % 2 == 0) Color(0xFF6C5CE7) else Color(0xFF00E0FF),
-                        radius = 4.dp.toPx(),
-                        center = Offset(x, y)
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun JCCyberpunkLoader() {
-    val infiniteTransition = rememberInfiniteTransition()
-    Card(modifier = Modifier.fillMaxWidth().padding(15.dp)) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 15.dp),
-            horizontalArrangement = Arrangement.Absolute.Center
-        ) {
-            val scanOffset by infiniteTransition.animateFloat(
-                initialValue = 0f,
+        delays.forEach { delayMillis ->
+            val infiniteTransition = rememberInfiniteTransition()
+            val scale by infiniteTransition.animateFloat(
+                initialValue = 0.3f,
                 targetValue = 1f,
                 animationSpec = infiniteRepeatable(
-                    animation = tween(2000, easing = LinearEasing)
-                )
+                    animation = keyframes {
+                        durationMillis = animationDuration
+                        0.3f at 0
+                        1f at animationDuration / 2
+                        0.3f at animationDuration
+                    },
+                    repeatMode = RepeatMode.Reverse
+                ),
+                label = "bounce_animation_$delayMillis"
             )
 
-            val gridSize = 20.dp
+            Box(
+                modifier = Modifier
+                    .size(dotSize)
+                    .graphicsLayer { scaleX = scale; scaleY = scale }
+                    .background(color, CircleShape)
+            )
+        }
+    }
+}
 
-            Canvas(modifier = Modifier.size(150.dp)) {
-                // Draw grid
-                for (x in 0..size.width.toInt() step gridSize.toPx().toInt()) {
-                    drawLine(
-                        color = Color(0x5566F1FF),
-                        start = Offset(x.toFloat(), 0f),
-                        end = Offset(x.toFloat(), size.height),
-                        strokeWidth = 1.dp.toPx()
-                    )
-                }
 
-                for (y in 0..size.height.toInt() step gridSize.toPx().toInt()) {
-                    drawLine(
-                        color = Color(0x5566F1FF),
-                        start = Offset(0f, y.toFloat()),
-                        end = Offset(size.width, y.toFloat()),
-                        strokeWidth = 1.dp.toPx()
-                    )
-                }
+@Composable
+fun RotatingCircleLoader(
+    modifier: Modifier = Modifier,
+    size: Dp = 48.dp,
+    color: Color = MaterialTheme.colorScheme.primary,
+    strokeWidth: Dp = 4.dp,
+    rotationDuration: Int = 1000
+) {
+    val infiniteTransition = rememberInfiniteTransition()
+    val rotation by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = rotationDuration, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "rotation_animation"
+    )
 
-                // Draw scanning line
-                drawLine(
-                    color = Color(0xFF00E0FF),
-                    start = Offset(0f, size.height * scanOffset),
-                    end = Offset(size.width, size.height * scanOffset),
-                    strokeWidth = 2.dp.toPx(),
-                    alpha = 0.8f
+    Canvas(modifier = modifier.size(size)) {
+        drawArc(
+            color = color,
+            startAngle = rotation,
+            sweepAngle = 270f,
+            useCenter = false,
+            style = Stroke(width = strokeWidth.toPx()),
+        )
+    }
+}
+
+
+
+
+@Composable
+fun SpinningArcProgressBar(
+    modifier: Modifier = Modifier,
+    size: Dp = 48.dp,
+    strokeWidth: Dp = 4.dp,
+    color: Color = Color.Blue
+) {
+    val infiniteTransition = rememberInfiniteTransition()
+    val angle by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        )
+    )
+
+    Canvas(modifier = modifier.size(size)) {
+        val radius = size.toPx() / 2
+        drawArc(
+            color = color,
+            startAngle = angle,
+            sweepAngle = 90f,
+            useCenter = false,
+            topLeft = Offset(strokeWidth.toPx() / 2, strokeWidth.toPx() / 2),
+            size = Size(size.toPx() - strokeWidth.toPx(), size.toPx() - strokeWidth.toPx()),
+            style = Stroke(width = strokeWidth.toPx())
+        )
+    }
+}
+
+
+@Composable
+fun PulsingCircleProgressBar(
+    modifier: Modifier = Modifier,
+    size: Dp = 48.dp,
+    color: Color = Color.Green
+) {
+    val infiniteTransition = rememberInfiniteTransition()
+    val scale by infiniteTransition.animateFloat(
+        initialValue = 0.8f,
+        targetValue = 1.2f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(800, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+
+    Canvas(modifier = modifier.size(size)) {
+        drawCircle(
+            color = color,
+            radius = (size.toPx() / 2) * scale,
+            center = Offset(size.toPx() / 2, size.toPx() / 2),
+            alpha = 1f - (scale - 0.8f)
+        )
+    }
+}
+
+
+
+@Composable
+fun WaveProgressBar(
+    modifier: Modifier = Modifier,
+    size: Dp = 48.dp,
+    color: Color = Color.Cyan
+) {
+    val infiniteTransition = rememberInfiniteTransition()
+    val offset by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        )
+    )
+
+    Canvas(modifier = modifier.size(size)) {
+        val radius = size.toPx() / 2
+        for (i in 0 until 360 step 30) {
+            val angle = Math.toRadians((i + offset).toDouble())
+            val x = radius + cos(angle) * radius * 0.4
+            val y = radius + sin(angle) * radius * 0.4
+            drawCircle(
+                color = color,
+                radius = 4.dp.toPx(),
+                center = Offset(x.toFloat(), y.toFloat())
+            )
+        }
+    }
+}
+
+
+
+@Composable
+fun GrowingDotsProgressBar(
+    modifier: Modifier = Modifier,
+    size: Dp = 48.dp,
+    color: Color = Color.Magenta
+) {
+    val infiniteTransition = rememberInfiniteTransition()
+    val scales = List(5) { index ->
+        infiniteTransition.animateFloat(
+            initialValue = 0.5f,
+            targetValue = 1f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(
+                    durationMillis = 600,
+                    delayMillis = index * 100,
+                    easing = FastOutSlowInEasing
+                ),
+                repeatMode = RepeatMode.Reverse
+            )
+        )
+    }
+
+    Canvas(modifier = modifier.size(size)) {
+        val spacing = size.toPx() / 6
+        scales.forEachIndexed { index, scale ->
+            drawCircle(
+                color = color,
+                radius = 4.dp.toPx() * scale.value,
+                center = Offset(spacing * (index + 1), size.toPx() / 2)
+            )
+        }
+    }
+}
+
+
+
+
+@Composable
+fun OrbitingPlanetsProgressBar(
+    modifier: Modifier = Modifier,
+    size: Dp = 48.dp,
+    color: Color = Color.Yellow
+) {
+    val infiniteTransition = rememberInfiniteTransition()
+    val angle by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        )
+    )
+
+    Canvas(modifier = modifier.size(size)) {
+        val center = size.toPx() / 2
+        drawCircle(
+            color = color.copy(alpha = 0.3f),
+            radius = center * 0.6f,
+            center = Offset(center, center),
+            style = Stroke(width = 7.dp.toPx())
+        )
+        for (i in 0 until 3) {
+            val planetAngle = angle + (i * 120f)
+            val x = center + cos(Math.toRadians(planetAngle.toDouble())).toFloat() * center * 0.6f
+            val y = center + sin(Math.toRadians(planetAngle.toDouble())).toFloat() * center * 0.6f
+            drawCircle(
+                color = color,
+                radius = 4.dp.toPx(),
+                center = Offset(x, y)
+            )
+        }
+    }
+}
+
+
+
+@Composable
+fun RotatingPetalsProgressBar(
+    modifier: Modifier = Modifier,
+    size: Dp = 48.dp,
+    color: Color = Color.Green
+) {
+    val infiniteTransition = rememberInfiniteTransition()
+    val angle by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(3000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        )
+    )
+
+    Canvas(modifier = modifier.size(size)) {
+        val center = size.toPx() / 2
+        for (i in 0 until 8) {
+            rotate((angle + i * 45f)) {
+                drawOval(
+                    color = color,
+                    topLeft = Offset(center - 4.dp.toPx(), center - 12.dp.toPx()),
+                    size = Size(8.dp.toPx(), 24.dp.toPx())
                 )
-
-                // Draw active nodes
-                for (x in 0..size.width.toInt() step gridSize.toPx().toInt()) {
-                    for (y in 0..size.height.toInt() step gridSize.toPx().toInt()) {
-                        val distance = abs(y - size.height * scanOffset)
-                        if (distance < 30) {
-                            val alpha = 1f - (distance / 30f)
-                            drawCircle(
-                                color = Color(0xFF00E0FF),
-                                radius = 4.dp.toPx() * alpha,
-                                center = Offset(x.toFloat(), y.toFloat()),
-                                alpha = alpha
-                            )
-                        }
-                    }
-                }
             }
         }
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun CircularProgressWithColorChangePreview() {
-    Column(modifier = Modifier.fillMaxSize().padding(10.dp)
-        .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.SpaceAround,
-        horizontalAlignment = Alignment.CenterHorizontally) {
-        JCAnimatedProgressBar(
-            progress = 0.75f,
-            backgroundColor = Color.LightGray,
-            progressColor = Color.Blue,
-            animationDuration = 1000
-        )
-        JCLiquidProgress()
-        JCNNLoader()
-        JCCyberpunkLoader()
-        JCDNALoader()
-        JCHolographicLoader()
-        JCEqualizerLoader()
-        JCSquareLoader()
-        JCOrbitLoader()
-        JCBouncingLoader()
 
+@Composable
+fun RippleEffectProgressBar(
+    modifier: Modifier = Modifier,
+    size: Dp = 48.dp,
+    color: Color = Color.Blue
+) {
+    val infiniteTransition = rememberInfiniteTransition()
+    val scales = List(3) { index ->
+        infiniteTransition.animateFloat(
+            initialValue = 0f,
+            targetValue = 1f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(
+                    durationMillis = 1200,
+                    delayMillis = index * 400,
+                    easing = LinearEasing
+                ),
+                repeatMode = RepeatMode.Restart
+            )
+        )
+    }
+
+    Canvas(modifier = modifier.size(size)) {
+        val center = size.toPx() / 2
+        scales.forEach { scale ->
+            drawCircle(
+                color = color.copy(alpha = 1f - scale.value),
+                radius = (size.toPx() / 2) * scale.value,
+                center = Offset(center, center),
+                style = Stroke(width = 2.dp.toPx())
+            )
+        }
     }
 }
 
+
+@Composable
+fun BouncingBallProgressBar(
+    modifier: Modifier = Modifier,
+    size: Dp = 48.dp,
+    color: Color = Color.Magenta
+) {
+    val infiniteTransition = rememberInfiniteTransition()
+    val position by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(800, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+
+    Canvas(modifier = modifier.size(size)) {
+        val ballRadius = 6.dp.toPx()
+        val x = size.toPx() * position
+        val y = size.toPx() / 2
+        drawCircle(
+            color = color,
+            radius = ballRadius,
+            center = Offset(x, y)
+        )
+    }
+}
+
+
+@Composable
+fun SpiralProgressBar(
+    modifier: Modifier = Modifier,
+    size: Dp = 48.dp,
+    color: Color = Color.Yellow
+) {
+    val infiniteTransition = rememberInfiniteTransition()
+    val angle by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1500, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        )
+    )
+
+    Canvas(modifier = modifier.size(size)) {
+        val center = size.toPx() / 2
+        val points = mutableListOf<Offset>()
+        for (i in 0 until 360 step 10) {
+            val rad = Math.toRadians((i + angle).toDouble())
+            val radius = (i / 360f) * center * 0.8f
+            val x = center + cos(rad) * radius
+            val y = center + sin(rad) * radius
+            points.add(Offset(x.toFloat(), y.toFloat()))
+        }
+        points.forEachIndexed { index, point ->
+            drawCircle(
+                color = color.copy(alpha = index / points.size.toFloat()),
+                radius = 2.dp.toPx(),
+                center = point
+            )
+        }
+    }
+}

@@ -52,11 +52,13 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview:1.7.8")
     debugImplementation("androidx.compose.ui:ui-tooling:1.7.8")
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
-    implementation("androidx.compose.ui:ui:1.6.0")
-    implementation("androidx.compose.foundation:foundation:1.6.0")
-    implementation("androidx.compose.material3:material3:1.2.0")
-    implementation("androidx.compose.animation:animation:1.6.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("androidx.compose.ui:ui:1.7.8")
+    implementation("androidx.compose.foundation:foundation:1.7.8")
+    implementation("androidx.compose.material3:material3:1.3.2")
+    implementation("androidx.compose.animation:animation:1.7.8")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.1")
+
+    implementation ("androidx.compose.ui:ui-graphics:1.7.8")
 
 }
 afterEvaluate {
