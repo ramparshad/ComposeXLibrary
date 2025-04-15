@@ -195,10 +195,10 @@ SpiralProgressBar(
             }
         }
 
-
+```
 https://github.com/user-attachments/assets/9151c767-0ce0-42b3-b300-a8bf37f289fe
 
-```
+
 #### 2.2 --> Customized BounceBottomBar
 ```bash
 var selectedIndex by remember { mutableStateOf(0) }
@@ -238,10 +238,13 @@ var selectedIndex by remember { mutableStateOf(0) }
 
 
 
-https://github.com/user-attachments/assets/fd868576-24eb-4802-964e-8d6e6ddd9a14
 
 
 ```
+https://github.com/user-attachments/assets/fd868576-24eb-4802-964e-8d6e6ddd9a14
+
+
+
 ## 🚀 ExpandedBottomBar
 
 #### 2.3 Default ExpandedBottomBar
