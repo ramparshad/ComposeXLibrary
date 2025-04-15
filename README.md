@@ -663,3 +663,7 @@ CoffeeCupButton(
         )
 
 ```
+
+## LICENSE
+
+[MIT License](LICENSE)
