@@ -273,13 +273,9 @@ var selectedIndex by remember { mutableStateOf(0) }
             }
         }
 
-
-
-
+```
 https://github.com/user-attachments/assets/43300f92-2610-4672-9096-c2da62db84e3
 
-
-```
 
 #### 2.4 Customized ExpandedBottomBar
 ```bash
@@ -316,12 +312,10 @@ var selectedIndex by remember { mutableStateOf(0) }
             }
         }
 
-
-
+```
 https://github.com/user-attachments/assets/23b146f4-ee96-407f-af10-cb51c5369246
 
 
-```
 
 ## ✨✨ 3. TOPBAR
 
@@ -357,13 +351,10 @@ var query by remember { mutableStateOf("") }
         }
     ) { _ -> }
 
-
-
-
+```
 https://github.com/user-attachments/assets/335b5b6e-2552-4cf2-83ef-21b2a8d2866b
 
 
-```
 #### 🚀 3.2 LiquidMotion TopAppBar
 
 ```bash
@@ -420,14 +411,11 @@ val scrollState = rememberScrollState()
             )
         }
     ){ _ -> }
-
-
-
-
+```
 https://github.com/user-attachments/assets/273e49cd-eafe-4b13-a852-69b1f05f1e59
 
 
-```
+
 ## ✨✨ 4. Animated TextFields
 
 #### 🚀 4.1 NeonTextField
@@ -445,13 +433,10 @@ NeonTextField(
             maxLine = 1,
             singleLine = true
         )
-
-
-
+```
 https://github.com/user-attachments/assets/cfd69246-c9c2-4627-aa7d-3d7efc11ff9a
 
 
-```
 
 #### 🚀 4.2 ModernAnimatedTextField
 
@@ -494,13 +479,10 @@ BubbleTextField(
 
             )
 
-
-
-
+```
 https://github.com/user-attachments/assets/6cef2551-13e6-4489-9b30-0126cd986880
 
 
-```
 
 #### 🚀 4.4 ScannerTextField
 ```bash
@@ -525,13 +507,10 @@ ScannerTextField(
 
              )
 
-
-
-
+```
 https://github.com/user-attachments/assets/1828ec31-2552-4ed3-8a24-7eddec951902
 
 
-```
 
 ## ✨✨ 5. AnimatedButtons
 
