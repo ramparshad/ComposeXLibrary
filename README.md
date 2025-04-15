@@ -89,16 +89,6 @@ PulsingCircleProgressBar(
 
 
 ```bash
-PulsingCircleProgressBar(
-                    modifier = Modifier.size(80.dp),
-                    size = 80.dp,
-                    color = Color.Green
-                )
-
-```
-
-
-```bash
 WaveProgressBar(
                     modifier = Modifier.size(80.dp),
                     size = 80.dp,
