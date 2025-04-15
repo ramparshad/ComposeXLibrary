@@ -8,8 +8,6 @@ THIS IS A JETPACK COMPOSE COMPONENTS LIBRARY IN WHICH MULTIPLE COMPONENTS LIKE P
 
 Step 1. Add the JitPack repository to your root settings.gradle  :
 
-
-
 ```bash
   dependencyResolutionManagement {
 		repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
@@ -30,8 +28,7 @@ dependencies {
 ## ✨✨ 1. Animated ProgressBars 
 
 
-https://github.com/user-attachments/assets/b76798b3-1453-41b8-b956-b9ece1ce5a2e
-
+https://github.com/user-attachments/assets/1e9dfb60-f738-4a5a-b610-f0cc7b30e4f7
 
 
 ```bash
@@ -238,6 +235,12 @@ var selectedIndex by remember { mutableStateOf(0) }
                 )
             }
         }
+
+
+
+https://github.com/user-attachments/assets/fd868576-24eb-4802-964e-8d6e6ddd9a14
+
+
 ```
 ## 🚀 ExpandedBottomBar
 
@@ -266,6 +269,12 @@ var selectedIndex by remember { mutableStateOf(0) }
                 )
             }
         }
+
+
+
+
+https://github.com/user-attachments/assets/43300f92-2610-4672-9096-c2da62db84e3
+
 
 ```
 
@@ -304,6 +313,11 @@ var selectedIndex by remember { mutableStateOf(0) }
             }
         }
 
+
+
+https://github.com/user-attachments/assets/23b146f4-ee96-407f-af10-cb51c5369246
+
+
 ```
 
 ## ✨✨ 3. TOPBAR
@@ -339,6 +353,12 @@ var query by remember { mutableStateOf("") }
             )
         }
     ) { _ -> }
+
+
+
+
+https://github.com/user-attachments/assets/335b5b6e-2552-4cf2-83ef-21b2a8d2866b
+
 
 ```
 #### 🚀 3.2 LiquidMotion TopAppBar
@@ -398,6 +418,12 @@ val scrollState = rememberScrollState()
         }
     ){ _ -> }
 
+
+
+
+https://github.com/user-attachments/assets/273e49cd-eafe-4b13-a852-69b1f05f1e59
+
+
 ```
 ## ✨✨ 4. Animated TextFields
 
@@ -416,6 +442,12 @@ NeonTextField(
             maxLine = 1,
             singleLine = true
         )
+
+
+
+https://github.com/user-attachments/assets/cfd69246-c9c2-4627-aa7d-3d7efc11ff9a
+
+
 ```
 
 #### 🚀 4.2 ModernAnimatedTextField
@@ -459,6 +491,12 @@ BubbleTextField(
 
             )
 
+
+
+
+https://github.com/user-attachments/assets/6cef2551-13e6-4489-9b30-0126cd986880
+
+
 ```
 
 #### 🚀 4.4 ScannerTextField
@@ -484,9 +522,20 @@ ScannerTextField(
 
              )
 
+
+
+
+https://github.com/user-attachments/assets/1828ec31-2552-4ed3-8a24-7eddec951902
+
+
 ```
 
 ## ✨✨ 5. AnimatedButtons
+
+
+
+https://github.com/user-attachments/assets/d77e7df9-4d85-4a36-9c53-712d38b2ef5f
+
 
 
 ```bash
