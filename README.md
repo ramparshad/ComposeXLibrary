@@ -27,9 +27,9 @@ dependencies {
     
 ## ✨✨ 1. Animated ProgressBars 
 
-
+<div align="Center">
 https://github.com/user-attachments/assets/1e9dfb60-f738-4a5a-b610-f0cc7b30e4f7
-
+</div>
 
 ```bash
   
