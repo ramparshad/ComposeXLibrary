@@ -80,7 +80,7 @@ SpinningArcProgressBar(
 
 ```bash
 PulsingCircleProgressBar(
-                    modifier = Modifier.size(80.dp),
+                    
                     
                     
                 )
