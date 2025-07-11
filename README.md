@@ -116,10 +116,7 @@ BouncingBallProgressBar()
 
 
 ```bash
-SpiralProgressBar(
-                modifier = Modifier.size(80.dp),
-
-            )
+SpiralProgressBar()            
 ```
 
 
