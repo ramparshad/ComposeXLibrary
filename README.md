@@ -108,7 +108,6 @@ RotatingPetalsProgressBar()
 
 ```bash
 RippleEffectProgressBar(
-                modifier = Modifier.size(80.dp),
            
                
             )
