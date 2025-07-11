@@ -110,7 +110,7 @@ RotatingPetalsProgressBar()
 RippleEffectProgressBar(
                 modifier = Modifier.size(80.dp),
                 size = 80.dp,
-                color = Color.Blue
+               
             )
 ```
 
