@@ -96,11 +96,7 @@ WaveProgressBar()
 
 
 ```bash
-OrbitingPlanetsProgressBar(
-                 
-              
-                    
-                )
+OrbitingPlanetsProgressBar()
 ```
 
 
