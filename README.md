@@ -97,7 +97,7 @@ WaveProgressBar()
 
 ```bash
 OrbitingPlanetsProgressBar(
-                    modifier = Modifier.size(80.dp),
+                 
               
                     
                 )
