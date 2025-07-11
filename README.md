@@ -112,9 +112,7 @@ RippleEffectProgressBar()
 
 
 ```bash
-BouncingBallProgressBar(
-               
-            )
+BouncingBallProgressBar()
 ```
 
 
