@@ -90,10 +90,7 @@ WaveProgressBar()
 ```
 
 ```bash
- GrowingDotsProgressBar(
-               
-                    
-                )
+ GrowingDotsProgressBar()
 
 ```
 
