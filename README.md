@@ -107,17 +107,13 @@ RotatingPetalsProgressBar()
 
 
 ```bash
-RippleEffectProgressBar(
-           
-               
-            )
+RippleEffectProgressBar()
 ```
 
 
 ```bash
 BouncingBallProgressBar(
                 modifier = Modifier.size(80.dp),
-                size = 80.dp,
                
             )
 ```
