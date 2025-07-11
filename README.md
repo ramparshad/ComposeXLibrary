@@ -100,7 +100,6 @@ OrbitingPlanetsProgressBar()
 ```
 
 
-
 ```bash
 RotatingPetalsProgressBar()
 ```
@@ -120,7 +119,6 @@ BouncingBallProgressBar()
 SpiralProgressBar(
                 modifier = Modifier.size(80.dp),
                 size = 80.dp,
-                color = Color.Yellow
             )
 ```
 
