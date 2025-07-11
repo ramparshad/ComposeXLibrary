@@ -93,7 +93,7 @@ WaveProgressBar()
  GrowingDotsProgressBar(
                     modifier = Modifier.size(80.dp),
                     size = 80.dp,
-                    color = Color.Magenta
+                    
                 )
 
 ```
