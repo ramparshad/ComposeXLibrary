@@ -102,11 +102,7 @@ OrbitingPlanetsProgressBar()
 
 
 ```bash
-RotatingPetalsProgressBar(
-                modifier = Modifier.size(80.dp),
-              
-                
-            )
+RotatingPetalsProgressBar()
 ```
 
 
