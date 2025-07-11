@@ -86,7 +86,7 @@ PulsingCircleProgressBar()
 
 ```bash
 WaveProgressBar(
-                    modifier = Modifier.size(80.dp),
+                  
                   
                     
                 )
