@@ -85,11 +85,7 @@ PulsingCircleProgressBar()
 
 
 ```bash
-WaveProgressBar(
-                  
-                  
-                    
-                )
+WaveProgressBar()
 
 ```
 
