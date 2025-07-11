@@ -113,7 +113,6 @@ RippleEffectProgressBar()
 
 ```bash
 BouncingBallProgressBar(
-                modifier = Modifier.size(80.dp),
                
             )
 ```
