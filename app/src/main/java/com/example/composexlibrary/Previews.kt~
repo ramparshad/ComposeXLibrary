@@ -120,11 +120,7 @@ fun review(modifier: Modifier = Modifier) {
             interactionSource = remember { MutableInteractionSource() }
         )
 
-        RewardButton(
-            onClick = { println("Reward claimed!") },
-            text = "Get Bonus Coins",
-            modifier = Modifier.height(70.dp).width(250.dp)
-        )
+       
 
         BlinkButton(
             onClick = { /*TODO*/ },
