@@ -67,7 +67,7 @@ class MainActivity : ComponentActivity() {
             ComposeXLibraryTheme {
                 /*Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Box(
-                        modifier = Modifier.padding(innerPadding)
+                        modifier = Modifier.padding()
                     ){*/
                         review()
                     }
