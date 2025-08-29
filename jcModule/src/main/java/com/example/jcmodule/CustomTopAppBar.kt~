@@ -311,7 +311,7 @@ fun LiquidMotionAppBar(
     title: String,
     onActionClick: (String) -> Unit,
     modifier: Modifier = Modifier,
-    // Leading Icon Properties
+    
     leadingIcon: ImageVector? = Icons.Default.ArrowBack,
     onLeadingIconClick: (() -> Unit)? = null,
     leadingIconColor: Color = MaterialTheme.colorScheme.onSurface,
