@@ -4,7 +4,7 @@ plugins {
 
     id("maven-publish") 
 
-    id("org.jetbrains.kotlin.plugin.compose") version "2.1.10" // ✅ REQUIRED
+    id("org.jetbrains.kotlin.plugin.compose") version "2.1.10" // ✅ 
 
 }
 
