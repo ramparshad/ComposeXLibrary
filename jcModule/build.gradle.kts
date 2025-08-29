@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
 
-    id("maven-publish") // 2025
+    id("maven-publish") 
 
     id("org.jetbrains.kotlin.plugin.compose") version "2.1.10" // ✅ REQUIRED
 
