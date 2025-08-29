@@ -1,11 +1,8 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-
     id("maven-publish") 
-
     id("org.jetbrains.kotlin.plugin.compose") version "2.1.10"
-
 }
 
 android {
@@ -47,8 +44,6 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-    
     implementation("androidx.compose.ui:ui-tooling-preview:1.7.8")
     debugImplementation("androidx.compose.ui:ui-tooling:1.7.8")
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
@@ -57,7 +52,6 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.3.2")
     implementation("androidx.compose.animation:animation:1.7.8")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.1")
-
     implementation ("androidx.compose.ui:ui-graphics:1.7.8")
 
 }
@@ -69,7 +63,6 @@ afterEvaluate {
                 groupId = "com.ramparshad.jcmodule" 
                 artifactId = "jcModule" 
                 version = "1.0.0" 
-
             }
         }
     }
