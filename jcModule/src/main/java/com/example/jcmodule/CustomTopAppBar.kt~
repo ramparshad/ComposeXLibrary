@@ -454,7 +454,7 @@ fun LiquidMotionAppBar(
                 }
             }
 
-            // Rest of your existing code for actions and border...
+            
             Row(
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
