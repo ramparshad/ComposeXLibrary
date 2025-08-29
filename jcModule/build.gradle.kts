@@ -68,7 +68,7 @@ afterEvaluate {
                 from(components["release"])
                 groupId = "com.ramparshad.jcmodule" 
                 artifactId = "jcModule" 
-                version = "1.0.0" // Version number
+                version = "1.0.0" 
 
             }
         }
