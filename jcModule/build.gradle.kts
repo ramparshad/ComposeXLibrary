@@ -67,7 +67,7 @@ afterEvaluate {
             create<MavenPublication>("release") {
                 from(components["release"])
                 groupId = "com.ramparshad.jcmodule" 
-                artifactId = "jcModule" // Module ka naam
+                artifactId = "jcModule" 
                 version = "1.0.0" // Version number
 
             }
